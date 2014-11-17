@@ -1,0 +1,17 @@
+
+Author: Logan Clarke
+Dictionary Assignment 2
+
+Purpose: The purpose of this porgram is to read a text file and 
+build a dictionary of words found in that file. The dictionary will
+output the words found in the file as well as the frequency of those
+words. The dictionary will not be case sensitive and will have a
+max word size and a max allowed number of words. This program will
+use an array of strings for its implementation. This one uses strings
+and a predefined template.
+
+
+
+Comments:The way I wrote the code makes sense and seems like it should work 
+but the compiler found several errors. My cpp file still will not compile I was
+unable to fix all the errors.  
