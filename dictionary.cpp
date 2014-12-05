@@ -1,229 +1,306 @@
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 #include <string>
 #include <iomanip>
 
 
-
 /*
 Author: Logan Clarke
-Dictionary Assignment 2
+Dictionary Assignment 3
 Purpose: The purpose of this porgram is to read a text file and 
 build a dictionary of words found in that file. The dictionary will
 output the words found in the file as well as the frequency of those
 words. The dictionary will not be case sensitive and will have a
-max word size and a max allowed number of words. This one uses strings
+max word size and a max allowed number of words. This one uses linked lists
 and a predefined template.
 */
 
 
-
-
 using namespace std;
-using std::string;
+const int MAX = 100;
 
-#define MAX 100
-
-typedef int BOOL;
-typedef string WORD;
-typedef WORD DICT[MAX];
+typedef string STRING;
+typedef bool BOOL;
+typedef string WORD;    
 
 
-/*
-  you will have to write code for these 5 functions.
-*/
-int LocateWord(DICT, WORD);
-BOOL FullDictionary(DICT);
-BOOL InsertWord(DICT,WORD);
-WORD GetNextWord(void);
-void DumpDictionary(DICT ,int[]);
-
-
-/*
-  note that these are global variables so that they are already initialized to 0
-*/
-DICT dictionary;  //your dictionary
-WORD word;        //
-int count[MAX];   //tracks word frequencies
-
-DICT idict;
-DICT sdict;
-
-string wrd;
-
+STRING idict[999];                                                 //all these variable are used for my funtion
+char nxtwrd[100]={0};                                              // where i get words from the input stream   
 char ch;
-char nxtwrd=[100];
-int scount=[100];
-
-int num;
-int i = 0;
-int numWord = 0;
-int newline = 0;
-int location;
-int check = 0;
-int x= 0;
-int y= -1;
+int newline = 0;                                 
+int a =0;
+int b = 0;
+int c=-1;
+bool check = false;
 
 
 
 
 
 /*
-  adds word to dictionary , if word can't be added returns 0 else returns 1
+    structure describing a word entry in the dictionary
 */
 
-BOOL InsertWord(DICT dict, WORD word)
-{
 
-	if (FullDictionary(dict)==0) {               //inserts a word at the next available position
-	dict[numWord] = word;                        // as long as the dictionary is not full
-        numWord++;
-        return 1;
-        }
-	else return 0;
+typedef struct entry {
 
-}
+      int count;                                                          /* frequency count for a particular word */
+      WORD w;                                                             /* the word itself */
+      struct entry *next;                                                 /* pointer to next entry */
 
-
+}ENTRY;
 
 
 /*
-  will sort the dictionary, and display the contents
+    structure describing the dictionary
 */
-void DumpDictionary(DICT dict, int count[]) {
+
+
+typedef struct dict {
+
+     int maxEntries;	                                                  /* maximum number of entries allowed; this is an artificial limit */
+                                                                          /* link lists can be as big as you want. This limit ensures that   */
+                                                                          /* this code tries to behave like the previous ones */
+                                
+
+    int numWords;                                                        /* number of words in the dictionary */
+    ENTRY *Words;                                                        /* pointer to the entries in the dictionary */
+
+}DICT;
+
+
+
+
+/* 
+  adds word to dictionary , if word can't be added 
+  returns false else returns true
+*/
+
+BOOL InsertWord(DICT &dict, WORD word) {
+
+  ENTRY *p;
+  
 
    
+         if(dict.numWords==0){
+         	dict.Words = new ENTRY;					//If there are no words in the dict
+         	dict.Words->w= word;					//The first word is put in
+                dict.Words->count= 1;
+         	dict.Words->next = 0;
+         	dict.numWords=1;
+                return true;
+         }
 
+         else if (dict.numWords>0) {
+	 							        //Otherwise the list is traversed until
+         	p=dict.Words;						//i can add an entry to the next location
 
+         	while (p->next!=0){					
+	 		p= p->next;
+	 	}
 
-	for(int i = 0; i<MAX; i++){                    
-                                                        //Nested for loop to sort the unsorted
-		for(int j = 0; j<MAX;j++){              //array of strings, runs through putting
-							// each string in apporpraite location
-                if( dict[i]>dict[j] )     		              
-                num++;				       
-		}
-
-        sdict[num] = dict[i];
-        scount[num]= count[i];
-        num=0;
+         	p->next = new ENTRY;
+	 	p=p->next;
+	 	p->w = word;
+                p->count= 1;
+	 	p->next=0;
+		dict.numWords=(dict.numWords) +1;
+		return true;
 	}
+	else if(dict.numWords == dict.maxEntries) return false;
+
+ }
 
 
 
 
-	cout << "Word                    Frequency"<<endl;
-	cout << "---------------------------------" <<endl;          //table and output for the dictionary
-                                                                     //with the appropriate spacing
-	for(int i =0;i<max;i++){
-    cout << setw(15) << sdict[i].data << "          " << setw(5) << scount[i];      
-    }								      
+/* 
+  will sort the dictionary, and display the contents
+*/
+
+void DumpDictionary(DICT &dict) {
+
+  int x=0;
+  int y=0;
+  ENTRY *temp;
+  temp = new ENTRY;
+  temp->next=0;
+  ENTRY *p;
+  
+  ENTRY *q;
+ 
+
+  if(dict.numWords>1){
+
+ 	while(x<=dict.numWords){
+	
+        	p=dict.Words;
+        	q=dict.Words->next;      
+        	x++;
+		y=0;
+
+     		while(y<=(dict.numWords-x-1)){                             
+					                                   
+		if(p->w > q->w){	                                   //if entries are out order        
+
+			temp->w = p->w;					   //the contents of two entries
+                	p->w = q->w;					   //in the linked list are swapped
+                	q->w = temp->w;                                    
+									  
+			temp->count = p->count;				   
+                	p->count = q->count;
+                	q->count = temp->count;
+
+
+                	p=p->next;
+			q=q->next;
+			y++;
+                	}
+
+ 		else {
+			p=p->next;
+			q=q->next;	
+			y++;
+			}
+
+
+       		}
+
+   	}
+  }
 
 
 
+
+ 
+  p=dict.Words;
+
+  cout << "Word                    Frequency"<<endl;
+  cout << "---------------------------------" <<endl;      
+
+
+       for(int i =0; i < dict.numWords; i++){
+        cout <<left << setw(15) << p->w << "          " 
+                          << setw(5) << (p->count)<<endl;      
+         p=p->next;
+        }
+
+ 	
+
+
+        p=dict.Words;
+
+	while (p !=0){					//destructor
+	temp= p->next;					
+        delete p;	
+        p=temp;
+	}
+       						              
+	delete temp;
+	
+	
+	
 
 }
 
 
 
 
-
-/*
-   will retrieve next word in input stream. Word is defined just as in assignment #1
-   returns WORD or 0 if no more words in input stream
+/* 
+   will retrieve next word in input stream. Word is defined 
+   just as in assignment #1 returns WORD or empty string if no 
+   more words in input stream
 */
 
 WORD GetNextWord(void){
 
-    
+   
+
+
    if (check == 0){
 	while( cin.good() ){
 
    		ch = cin.get();
 
-    		if ( isalpha(ch) ) {            /* function test is ch  is A-Z, a-z */
+    		if ( isalpha(ch) ) {                                           /* function test is ch  is A-Z, a-z */
        		ch = char(tolower(ch));
-                nxtwrd[i] = ch;             //char array nxtwrd that gets the new word
-        	newline = 1;
-   		i++;
+                nxtwrd[a] = ch;                                                //char array nxtwrd that gets 
+        	newline = 1;						       //takes the new input
+   		a++;
                 }
 
    		else if (newline){
        		newline = 0;
-        	string str(nxtwrd);         //string str that the new word goes into
-		idict[x] = str;             // put into an array, once all words processed fall out
-                x++;
-                i=0;                
+        	string str(nxtwrd);                                            //string str that the new word goes into
+		str= str.substr(0,10);					       //is put into the array of strings idict
+                idict[b] = str; 
+       
+                for(int p=0;p<a;p++) nxtwrd[p]= '\0';           
+		b++;							       //the array of char nxtwrd is reset 
+                a=0; 							       //so that its empty
 		}
 
         }
     }
-    y++;
-    check = 1;                             //then the appropraite word is returned 
-    if (y<=100)return idict[y];            // when the function is called or 0 if none left
-    else return 0;
+    c++;
+    check = 1;                                                                 //then the appropraite word is returned 
+    if (c<=100)return idict[c];                                                // when the function is called or 0 if none left
+    else return "";
 }
 
 
 
 
 
-/*
-   if dictionary is full, return 1 else 0
+/* 
+   if dictionary is full, return true else false 
 */
-BOOL FullDictionary(DICT dict) {
+
+BOOL FullDictionary(DICT &dict) {
 
 
-	if(numWord == MAX) return 1;                //uses variable that counts the number of
-	else return 0;				   //words in the dict to determine if its full
+	if(dict.numWords == dict.maxEntries) return 1;                         //uses variable that counts the number of
+	else return 0;				                               //words in the dict to determine if its full
 }
 
 
 
-
-
-
 /*
-   will determine if dictionary contains word. if found, returns position else returns value < 0
+   will determine if dictionary contains word. if found, returns 
+   pointer to entry else returns  0
 */
 
-int LocateWord(DICT dict, WORD word) {
-        
-         location = -1;
+ENTRY *LocateWord(DICT &dict, WORD word) {
+
+  ENTRY *p;
+ 
   
-
-	for (int i = 0; i < numWord; i++){
-		wrd = dict[i];                   //compares each word to word of interest           
-		if ( word==wrd){                 //returns the location if found else returns -1
-		location = i;
+  p = dict.Words;
+  WORD theWord;
+  bool found=false;
+  
+           
+	for (int i = 0; i < dict.numWords; i++){
+        
+		WORD theWord = p->w;                                           //compares each word to word of interest           
+		if ( word==theWord){                                           //returns the location if found else returns -1
+                found=true;
+                break;
 		}
-	
+	        else {
+		p= p->next;   
+                }
 
 	}
+       
 
- return location;
-
-
+  if(found==true) return p;
+  else return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

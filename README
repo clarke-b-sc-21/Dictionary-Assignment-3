@@ -1,17 +1,25 @@
 
 Author: Logan Clarke
-Dictionary Assignment 2
+Dictionary Assignment 3
 
 Purpose: The purpose of this porgram is to read a text file and 
 build a dictionary of words found in that file. The dictionary will
 output the words found in the file as well as the frequency of those
 words. The dictionary will not be case sensitive and will have a
 max word size and a max allowed number of words. This program will
-use an array of strings for its implementation. This one uses strings
+use an array of strings for its implementation. This one uses linked lists
 and a predefined template.
 
 
 
-Comments:The way I wrote the code makes sense and seems like it should work 
-but the compiler found several errors. My cpp file still will not compile I was
-unable to fix all the errors.  
+Comments: When I run valgrind there is two allocs 
+that are not free'd 
+
+I searched for them for the last hour but did not find them. As 
+far as I can tell the destructor i wrote should take of everything but
+ valgrind disagrees.
+
+I new my first entry, every following entry, and an entry called temp. 
+The first entry and following entries are deleted by my destructor and 
+temp is deleted right after the destructor runs. Im missing something. 
+
